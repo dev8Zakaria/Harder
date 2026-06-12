@@ -154,14 +154,14 @@ Les exercices personnalises restent locaux et sont stockes dans SQLite. Les imag
 
 ## Captures d'ecran principales
 
-Avant de publier sur GitHub, placer les captures dans un dossier `screenshots/` a la racine du projet.
-
-Exemples de captures recommandees :
+Les captures principales sont placees dans le dossier `screenshots/` a la racine du projet. GitHub affiche les images avec des chemins relatifs au depot, pas avec des chemins locaux Windows.
 
 ```txt
 screenshots/
-  accueil_dark.png
-  Accueil_light.png
+  landing_screen.png
+  acceuil_dark.png
+  acceuil_dark_2.png
+  Acceuil_light.png
   workout_list.png
   create_workout.png
   one_workout.png
@@ -171,15 +171,21 @@ screenshots/
   profil.png
 ```
 
-Dans le README GitHub, elles peuvent etre affichees comme ceci :
-
-| Accueil sombre | Accueil clair | Workouts |
+| Landing | Accueil sombre | Accueil clair |
 | --- | --- | --- |
-| ![Accueil sombre](screenshots/acceuil_dark.png) | ![Accueil clair](screenshots/Accueil_light.png) | ![Workouts](screenshots/workout_list.png) |
+| ![Landing](screenshots/landing_screen.png) | ![Accueil sombre](screenshots/acceuil_dark.png) | ![Accueil clair](screenshots/Acceuil_light.png) |
 
-| Recherche | Exercice personnalise | Profil |
+| Workouts | Creation workout | Details workout |
 | --- | --- | --- |
-| ![Recherche](screenshots/search.png) | ![Exercice personnalise](screenshots/personalized_exercice.png) | ![Profil](screenshots/profil.png) |
+| ![Workouts](screenshots/workout_list.png) | ![Creation workout](screenshots/create_workout.png) | ![Details workout](screenshots/one_workout.png) |
+
+| Recherche | Exercice personnalise | Seance |
+| --- | --- | --- |
+| ![Recherche](screenshots/search.png) | ![Exercice personnalise](screenshots/personalized_exercice.png) | ![Seance](screenshots/in_workout.png) |
+
+| Profil |
+| --- |
+| ![Profil](screenshots/profil.png) |
 
 ## Installation
 
