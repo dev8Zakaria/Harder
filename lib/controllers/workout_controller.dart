@@ -11,7 +11,12 @@ class WorkoutController {
     return _service.getWorkouts(userId);
   }
 
-  Future<void> add(String name, String description, String dayName, List<String> exercises) {
+  Future<void> add(
+    String name,
+    String description,
+    String dayName,
+    List<String> exercises,
+  ) {
     return _service.addWorkout(
       WorkoutModel(
         userId: userId,

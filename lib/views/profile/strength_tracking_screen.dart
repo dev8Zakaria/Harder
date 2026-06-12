@@ -57,7 +57,11 @@ class _StrengthTrackingScreenState extends State<StrengthTrackingScreen> {
     setState(() {
       // Filter logs for this exercise, reversed so oldest logs are first (X-axis left-to-right)
       _exerciseLogs = _allLogs
-          .where((l) => l.exerciseName.toLowerCase() == _selectedExercise!.toLowerCase())
+          .where(
+            (l) =>
+                l.exerciseName.toLowerCase() ==
+                _selectedExercise!.toLowerCase(),
+          )
           .toList()
           .reversed
           .toList();
@@ -68,163 +72,193 @@ class _StrengthTrackingScreenState extends State<StrengthTrackingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Progression de Force', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Progression de Force',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _exercises.isEmpty
-              ? const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(24.0),
-                    child: Text(
-                      'Aucune série n\'a été enregistrée.\nTerminez une séance avec des exercices complétés pour voir votre graphique de force.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey),
+          ? const Center(
+              child: Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Text(
+                  'Aucune série n\'a été enregistrée.\nTerminez une séance avec des exercices complétés pour voir votre graphique de force.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey),
+                ),
+              ),
+            )
+          : ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                const Text(
+                  'Sélectionnez un exercice pour voir l\'évolution de vos charges :',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                const SizedBox(height: 12),
+
+                // Dropdown selector
+                AppCard(
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _selectedExercise,
+                      isExpanded: true,
+                      dropdownColor: Theme.of(context).cardColor,
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      items: _exercises
+                          .map(
+                            (ex) =>
+                                DropdownMenuItem(value: ex, child: Text(ex)),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedExercise = value;
+                        });
+                        _updateExerciseLogs();
+                      },
                     ),
                   ),
-                )
-              : ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    const Text(
-                      'Sélectionnez un exercice pour voir l\'évolution de vos charges :',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 12),
-                    
-                    // Dropdown selector
-                    AppCard(
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String>(
-                          value: _selectedExercise,
-                          isExpanded: true,
-                          dropdownColor: Theme.of(context).cardColor,
-                          style: TextStyle(
-                            color: Theme.of(context).textTheme.bodyLarge?.color,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          items: _exercises
-                              .map((ex) => DropdownMenuItem(value: ex, child: Text(ex)))
-                              .toList(),
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedExercise = value;
-                            });
-                            _updateExerciseLogs();
-                          },
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
+                ),
+                const SizedBox(height: 20),
 
-                    // Chart Card
-                    if (_exerciseLogs.isNotEmpty) ...[
-                      AppCard(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                // Chart Card
+                if (_exerciseLogs.isNotEmpty) ...[
+                  AppCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Poids soulevé par série (kg) - $_selectedExercise',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          height: 240,
+                          child: LineChart(
+                            LineChartData(
+                              gridData: const FlGridData(show: false),
+                              titlesData: FlTitlesData(
+                                show: true,
+                                rightTitles: const AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                                topTitles: const AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                                bottomTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 22,
+                                    interval: 1,
+                                    getTitlesWidget: (value, meta) {
+                                      return Text(
+                                        'S#${value.toInt() + 1}',
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 9,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                                leftTitles: AxisTitles(
+                                  sideTitles: SideTitles(
+                                    showTitles: true,
+                                    reservedSize: 32,
+                                    getTitlesWidget: (value, meta) {
+                                      return Text(
+                                        '${value.toInt()}kg',
+                                        style: const TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 9,
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                              borderData: FlBorderData(show: false),
+                              minX: 0,
+                              maxX: (_exerciseLogs.length - 1).toDouble(),
+                              lineBarsData: [
+                                LineChartBarData(
+                                  spots: List.generate(_exerciseLogs.length, (
+                                    i,
+                                  ) {
+                                    return FlSpot(
+                                      i.toDouble(),
+                                      _exerciseLogs[i].weight,
+                                    );
+                                  }),
+                                  isCurved: true,
+                                  color: AppColors.primary,
+                                  barWidth: 4,
+                                  isStrokeCapRound: true,
+                                  dotData: const FlDotData(show: true),
+                                  belowBarData: BarAreaData(
+                                    show: true,
+                                    color: AppColors.primary.withOpacity(0.15),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Recent Log Details
+                  const Text(
+                    'Détails des séries (plus récents en premier)',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: _exerciseLogs.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      // Display in reverse order (most recent first)
+                      final log =
+                          _exerciseLogs[_exerciseLogs.length - 1 - index];
+                      return AppCard(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Poids soulevé par série (kg) - $_selectedExercise',
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                              'Série ${log.setNumber}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                            const SizedBox(height: 24),
-                            SizedBox(
-                              height: 240,
-                              child: LineChart(
-                                LineChartData(
-                                  gridData: const FlGridData(show: false),
-                                  titlesData: FlTitlesData(
-                                    show: true,
-                                    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                    bottomTitles: AxisTitles(
-                                      sideTitles: SideTitles(
-                                        showTitles: true,
-                                        reservedSize: 22,
-                                        interval: 1,
-                                        getTitlesWidget: (value, meta) {
-                                          return Text(
-                                            'S#${value.toInt() + 1}',
-                                            style: const TextStyle(color: Colors.grey, fontSize: 9),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                    leftTitles: AxisTitles(
-                                      sideTitles: SideTitles(
-                                        showTitles: true,
-                                        reservedSize: 32,
-                                        getTitlesWidget: (value, meta) {
-                                          return Text(
-                                            '${value.toInt()}kg',
-                                            style: const TextStyle(color: Colors.grey, fontSize: 9),
-                                          );
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  borderData: FlBorderData(show: false),
-                                  minX: 0,
-                                  maxX: (_exerciseLogs.length - 1).toDouble(),
-                                  lineBarsData: [
-                                    LineChartBarData(
-                                      spots: List.generate(_exerciseLogs.length, (i) {
-                                        return FlSpot(i.toDouble(), _exerciseLogs[i].weight);
-                                      }),
-                                      isCurved: true,
-                                      color: AppColors.primary,
-                                      barWidth: 4,
-                                      isStrokeCapRound: true,
-                                      dotData: const FlDotData(show: true),
-                                      belowBarData: BarAreaData(
-                                        show: true,
-                                        color: AppColors.primary.withOpacity(0.15),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                            Text(
+                              '${log.reps} reps x ${log.weight} kg',
+                              style: const TextStyle(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      
-                      // Recent Log Details
-                      const Text(
-                        'Détails des séries (plus récents en premier)',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 10),
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _exerciseLogs.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
-                        itemBuilder: (context, index) {
-                          // Display in reverse order (most recent first)
-                          final log = _exerciseLogs[_exerciseLogs.length - 1 - index];
-                          return AppCard(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Série ${log.setNumber}',
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                Text(
-                                  '${log.reps} reps x ${log.weight} kg',
-                                  style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ],
-                ),
+                      );
+                    },
+                  ),
+                ],
+              ],
+            ),
     );
   }
 }

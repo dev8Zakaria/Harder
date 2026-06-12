@@ -38,11 +38,14 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
   Future<void> _load() async {
     try {
       final workouts = await _workoutController.all();
-      final updatedWorkout = workouts.firstWhere((w) => w.id == _workout.id, orElse: () => _workout);
-      
+      final updatedWorkout = workouts.firstWhere(
+        (w) => w.id == _workout.id,
+        orElse: () => _workout,
+      );
+
       final official = await _exerciseController.officialExercises();
       final custom = await _exerciseController.customExercises();
-      
+
       if (mounted) {
         setState(() {
           _workout = updatedWorkout;
@@ -59,14 +62,17 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
 
   ExerciseModel? _findExercise(String name) {
     try {
-      return _allExercises.firstWhere((e) => e.name.toLowerCase() == name.toLowerCase());
+      return _allExercises.firstWhere(
+        (e) => e.name.toLowerCase() == name.toLowerCase(),
+      );
     } catch (_) {
       return null;
     }
   }
 
   Future<void> _removeExercise(String exerciseName) async {
-    final updatedList = List<String>.from(_workout.exercises)..remove(exerciseName);
+    final updatedList = List<String>.from(_workout.exercises)
+      ..remove(exerciseName);
     final updatedWorkout = WorkoutModel(
       id: _workout.id,
       userId: _workout.userId,
@@ -83,7 +89,10 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_workout.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          _workout.name,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.play_circle_fill, size: 28),
@@ -110,38 +119,52 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+                          const Icon(
+                            Icons.calendar_today,
+                            size: 16,
+                            color: Colors.grey,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             _workout.dayName,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 8),
                       Text(
                         _workout.description,
-                        style: const TextStyle(color: Colors.grey, fontSize: 14),
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 14,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 20),
-                
+
                 // Title Row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
                       'Exercices de la séance',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     TextButton.icon(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => AddExercisesScreen(workout: _workout),
+                            builder: (_) =>
+                                AddExercisesScreen(workout: _workout),
                           ),
                         ).then((_) => _load());
                       },
@@ -151,7 +174,7 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Exercises List
                 _workout.exercises.isEmpty
                     ? const Padding(
@@ -172,19 +195,31 @@ class _WorkoutDetailsScreenState extends State<WorkoutDetailsScreen> {
                         itemBuilder: (context, index) {
                           final exName = _workout.exercises[index];
                           final exercise = _findExercise(exName);
-                          
+
                           return AppCard(
                             child: ListTile(
                               contentPadding: EdgeInsets.zero,
-                              leading: exercise != null 
+                              leading: exercise != null
                                   ? _ExerciseAvatar(exercise: exercise)
-                                  : const CircleAvatar(child: Icon(Icons.fitness_center)),
-                              title: Text(exName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                  : const CircleAvatar(
+                                      child: Icon(Icons.fitness_center),
+                                    ),
+                              title: Text(
+                                exName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                               subtitle: exercise != null
-                                  ? Text('${exercise.bodyPart} • ${exercise.targetMuscle} • ${exercise.equipment}')
+                                  ? Text(
+                                      '${exercise.bodyPart} • ${exercise.targetMuscle} • ${exercise.equipment}',
+                                    )
                                   : const Text('Exercice'),
                               trailing: IconButton(
-                                icon: const Icon(Icons.remove_circle_outline, color: Colors.redAccent),
+                                icon: const Icon(
+                                  Icons.remove_circle_outline,
+                                  color: Colors.redAccent,
+                                ),
                                 onPressed: () => _removeExercise(exName),
                               ),
                             ),
@@ -212,7 +247,8 @@ class _ExerciseAvatar extends StatelessWidget {
           width: 48,
           height: 48,
           fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => _fallbackIcon(Icons.image_not_supported_outlined),
+          errorBuilder: (_, _, _) =>
+              _fallbackIcon(Icons.image_not_supported_outlined),
         ),
       );
     }

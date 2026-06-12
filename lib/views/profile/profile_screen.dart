@@ -4,8 +4,9 @@ import '../../controllers/auth_controller.dart';
 import '../../controllers/profile_controller.dart';
 import '../../models/user_profile_model.dart';
 import '../../utils/app_colors.dart';
+import '../../utils/theme_manager.dart';
 import '../../widgets/app_card.dart';
-import '../auth/login_screen.dart';
+import '../auth/landing_screen.dart';
 import '../body/body_weight_screen.dart';
 import '../calories/calories_screen.dart';
 import '../history/history_screen.dart';
@@ -48,7 +49,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profil', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Profil',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -64,8 +68,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         children: [
                           CircleAvatar(
                             radius: 36,
-                            backgroundColor: Theme.of(context).colorScheme.primary,
-                            child: const Icon(Icons.person, color: Colors.black, size: 36),
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.primary,
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.black,
+                              size: 36,
+                            ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -74,12 +84,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               children: [
                                 Text(
                                   _profile?.fullName ?? 'Athlète HARDER',
-                                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
                                   email,
-                                  style: const TextStyle(color: Colors.grey, fontSize: 13),
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 13,
+                                  ),
                                 ),
                               ],
                             ),
@@ -87,46 +103,66 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ],
                       ),
                       const Divider(height: 32),
-                      
+
                       // Stats Row
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           _ProfileStatItem(
                             label: 'Taille',
-                            value: _profile != null ? '${_profile!.height.toInt()} cm' : '--',
+                            value: _profile != null
+                                ? '${_profile!.height.toInt()} cm'
+                                : '--',
                           ),
                           _ProfileStatItem(
                             label: 'Poids Init.',
-                            value: _profile != null ? '${_profile!.initialWeight.toStringAsFixed(1)} kg' : '--',
+                            value: _profile != null
+                                ? '${_profile!.initialWeight.toStringAsFixed(1)} kg'
+                                : '--',
                           ),
                           _ProfileStatItem(
                             label: 'Âge',
-                            value: _profile != null ? '${_profile!.age} ans' : '--',
+                            value: _profile != null
+                                ? '${_profile!.age} ans'
+                                : '--',
                           ),
                         ],
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Program Details
                       Row(
                         children: [
-                          const Icon(Icons.track_changes, size: 16, color: AppColors.primary),
+                          const Icon(
+                            Icons.track_changes,
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Objectif : ${_profile?.goal ?? 'Non défini'}',
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 6),
                       Row(
                         children: [
-                          const Icon(Icons.bar_chart, size: 16, color: AppColors.primary),
+                          const Icon(
+                            Icons.bar_chart,
+                            size: 16,
+                            color: AppColors.primary,
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'Niveau : ${_profile?.level ?? 'Non défini'}',
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ],
                       ),
@@ -152,10 +188,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: 'Historique d\'entraînement',
                         subtitle: 'Visualiser vos séances complétées',
                         onTap: () {
-                          final userId = widget.authController.currentUser?.id ?? 0;
+                          final userId =
+                              widget.authController.currentUser?.id ?? 0;
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => HistoryScreen(userId: userId)),
+                            MaterialPageRoute(
+                              builder: (_) => HistoryScreen(userId: userId),
+                            ),
                           );
                         },
                       ),
@@ -165,10 +204,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: 'Suivi de Poids',
                         subtitle: 'Graphiques et logs de vos mesures',
                         onTap: () {
-                          final userId = widget.authController.currentUser?.id ?? 0;
+                          final userId =
+                              widget.authController.currentUser?.id ?? 0;
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => BodyWeightScreen(userId: userId)),
+                            MaterialPageRoute(
+                              builder: (_) => BodyWeightScreen(userId: userId),
+                            ),
                           ).then((_) => _loadProfile());
                         },
                       ),
@@ -178,10 +220,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: 'Suivi de Calories',
                         subtitle: 'Calories consommées vs brûlées',
                         onTap: () {
-                          final userId = widget.authController.currentUser?.id ?? 0;
+                          final userId =
+                              widget.authController.currentUser?.id ?? 0;
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => CaloriesScreen(userId: userId)),
+                            MaterialPageRoute(
+                              builder: (_) => CaloriesScreen(userId: userId),
+                            ),
                           );
                         },
                       ),
@@ -191,10 +236,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: 'Progression de Force',
                         subtitle: 'Graphique de force par exercice',
                         onTap: () {
-                          final userId = widget.authController.currentUser?.id ?? 0;
+                          final userId =
+                              widget.authController.currentUser?.id ?? 0;
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => StrengthTrackingScreen(userId: userId)),
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  StrengthTrackingScreen(userId: userId),
+                            ),
                           );
                         },
                       ),
@@ -215,10 +264,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: EdgeInsets.zero,
                   child: Column(
                     children: [
-                      const ListTile(
-                        leading: Icon(Icons.dark_mode_outlined, color: AppColors.primary),
-                        title: Text('Mode sombre', style: TextStyle(fontWeight: FontWeight.bold)),
-                        subtitle: Text('Theme sombre verrouille pour respecter le design du projet.'),
+                      SwitchListTile(
+                        title: const Text(
+                          'Mode sombre',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: const Text(
+                          'Basculer entre thème sombre et clair',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        secondary: const Icon(
+                          Icons.dark_mode_outlined,
+                          color: AppColors.primary,
+                        ),
+                        value: ThemeManager.instance.isDarkMode,
+                        activeColor: AppColors.primary,
+                        onChanged: (value) {
+                          setState(() {
+                            ThemeManager.instance.toggleTheme(value);
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -234,7 +299,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => LoginScreen(authController: widget.authController),
+                          builder: (_) =>
+                              LandingScreen(authController: AuthController()),
                         ),
                       );
                     },
@@ -265,19 +331,10 @@ class _ProfileStatItem extends StatelessWidget {
       children: [
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: Colors.grey,
-          ),
-        ),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
       ],
     );
   }

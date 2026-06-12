@@ -47,7 +47,11 @@ class SeedService {
     await _seedSetLogs(db, userId);
   }
 
-  static Future<void> _seedWeights(Database db, int userId, DateTime now) async {
+  static Future<void> _seedWeights(
+    Database db,
+    int userId,
+    DateTime now,
+  ) async {
     final existing = await db.query(
       'body_weights',
       where: 'userId = ?',
@@ -78,7 +82,11 @@ class SeedService {
     }
   }
 
-  static Future<void> _seedCalories(Database db, int userId, DateTime now) async {
+  static Future<void> _seedCalories(
+    Database db,
+    int userId,
+    DateTime now,
+  ) async {
     final existing = await db.query(
       'calorie_entries',
       where: 'userId = ?',
@@ -142,7 +150,11 @@ class SeedService {
     });
   }
 
-  static Future<void> _seedSessions(Database db, int userId, DateTime now) async {
+  static Future<void> _seedSessions(
+    Database db,
+    int userId,
+    DateTime now,
+  ) async {
     final existing = await db.query(
       'workout_sessions',
       where: 'userId = ?',

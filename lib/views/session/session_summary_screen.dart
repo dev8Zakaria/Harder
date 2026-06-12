@@ -43,7 +43,7 @@ class SessionSummaryScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Spacer(),
-              
+
               // Success Icon / Celebration
               const Center(
                 child: CircleAvatar(
@@ -57,7 +57,7 @@ class SessionSummaryScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              
+
               // Title
               const Text(
                 'Félicitations !',
@@ -70,10 +70,7 @@ class SessionSummaryScreen extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 'Vous avez terminé votre entraînement :',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
               ),
               const SizedBox(height: 4),
               Text(
@@ -85,7 +82,7 @@ class SessionSummaryScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 36),
-              
+
               // Stats Card
               AppCard(
                 child: Column(
@@ -123,9 +120,9 @@ class SessionSummaryScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              
+
               const Spacer(),
-              
+
               // Return Home Button
               SizedBox(
                 width: double.infinity,
@@ -175,10 +172,7 @@ class _StatItem extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
-          ),
+          style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
         ),
       ],
     );

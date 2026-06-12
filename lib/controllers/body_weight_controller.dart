@@ -13,6 +13,8 @@ class BodyWeightController {
 
   Future<void> add(double weight) {
     final today = DateTime.now().toIso8601String().substring(0, 10);
-    return _service.addWeight(BodyWeightModel(userId: userId, date: today, weight: weight));
+    return _service.addWeight(
+      BodyWeightModel(userId: userId, date: today, weight: weight),
+    );
   }
 }

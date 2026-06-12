@@ -30,6 +30,41 @@ class ExerciseService {
     return fallbackExercises;
   }
 
+  Future<List<ExerciseModel>> searchApiExercises(String query) async {
+    final cleanQuery = query.trim();
+    if (cleanQuery.length < 2) {
+      return getApiExercises();
+    }
+
+    try {
+      final response = await http
+          .get(
+            Uri.parse(
+              '$_baseUrl/exercises/name/${Uri.encodeComponent(cleanQuery)}',
+            ),
+            headers: ExerciseApiConfig.headers,
+          )
+          .timeout(const Duration(seconds: 12));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body) as List<dynamic>;
+        return data
+            .map((item) => ExerciseModel.fromJson(item as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (_) {
+      // Fallback local si l'API ne repond pas.
+    }
+
+    final lower = cleanQuery.toLowerCase();
+    return fallbackExercises.where((exercise) {
+      return exercise.name.toLowerCase().contains(lower) ||
+          exercise.bodyPart.toLowerCase().contains(lower) ||
+          exercise.targetMuscle.toLowerCase().contains(lower) ||
+          exercise.equipment.toLowerCase().contains(lower);
+    }).toList();
+  }
+
   Future<List<ExerciseModel>> getCustomExercises(int userId) async {
     final db = await DatabaseService.instance.database;
     final rows = await db.query(

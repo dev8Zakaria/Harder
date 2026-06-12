@@ -120,9 +120,18 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                       value: _goal,
                       isExpanded: true,
                       items: const [
-                        DropdownMenuItem(value: 'Prise de masse', child: Text('Prise de masse')),
-                        DropdownMenuItem(value: 'Perte de poids', child: Text('Perte de poids')),
-                        DropdownMenuItem(value: 'Maintien', child: Text('Maintien')),
+                        DropdownMenuItem(
+                          value: 'Prise de masse',
+                          child: Text('Prise de masse'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Perte de poids',
+                          child: Text('Perte de poids'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Maintien',
+                          child: Text('Maintien'),
+                        ),
                       ],
                       onChanged: (value) => setState(() => _goal = value!),
                     ),
@@ -132,9 +141,18 @@ class _AccountInfoScreenState extends State<AccountInfoScreen> {
                       value: _level,
                       isExpanded: true,
                       items: const [
-                        DropdownMenuItem(value: 'Débutant', child: Text('Débutant')),
-                        DropdownMenuItem(value: 'Intermédiaire', child: Text('Intermédiaire')),
-                        DropdownMenuItem(value: 'Avancé', child: Text('Avancé')),
+                        DropdownMenuItem(
+                          value: 'Débutant',
+                          child: Text('Débutant'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Intermédiaire',
+                          child: Text('Intermédiaire'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Avancé',
+                          child: Text('Avancé'),
+                        ),
                       ],
                       onChanged: (value) => setState(() => _level = value!),
                     ),

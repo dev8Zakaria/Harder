@@ -11,6 +11,10 @@ class ExerciseController {
     return _service.getApiExercises();
   }
 
+  Future<List<ExerciseModel>> searchOfficialExercises(String query) {
+    return _service.searchApiExercises(query);
+  }
+
   Future<List<ExerciseModel>> customExercises() {
     return _service.getCustomExercises(userId);
   }

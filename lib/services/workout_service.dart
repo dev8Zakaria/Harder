@@ -33,6 +33,10 @@ class WorkoutService {
 
   Future<void> deleteWorkout(int id, int userId) async {
     final db = await DatabaseService.instance.database;
-    await db.delete('workouts', where: 'id = ? AND userId = ?', whereArgs: [id, userId]);
+    await db.delete(
+      'workouts',
+      where: 'id = ? AND userId = ?',
+      whereArgs: [id, userId],
+    );
   }
 }

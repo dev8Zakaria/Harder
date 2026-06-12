@@ -17,7 +17,7 @@ class ActiveSessionScreen extends StatefulWidget {
 
 class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
   late final SessionController _sessionController;
-  
+
   // Timer state
   late DateTime _startTime;
   Timer? _timer;
@@ -33,12 +33,10 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
     _sessionController = SessionController(widget.workout.userId);
     _startTime = DateTime.now();
     _startTimer();
-    
+
     // Initialize exercises with 1 default empty set
     for (final exercise in widget.workout.exercises) {
-      _setsData[exercise] = [
-        SetInfo(setNumber: 1, reps: '10', weight: '60')
-      ];
+      _setsData[exercise] = [SetInfo(setNumber: 1, reps: '10', weight: '60')];
     }
   }
 
@@ -73,7 +71,7 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
     setState(() {
       final list = _setsData[exerciseName] ?? [];
       final nextSetNum = list.isEmpty ? 1 : list.length + 1;
-      
+
       // Default values from last set if exists
       String reps = '10';
       String weight = '60';
@@ -81,7 +79,7 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
         reps = list.last.repsController.text;
         weight = list.last.weightController.text;
       }
-      
+
       list.add(SetInfo(setNumber: nextSetNum, reps: reps, weight: weight));
       _setsData[exerciseName] = list;
     });
@@ -105,7 +103,7 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
     // Collect all completed sets
     int completedSetsCount = 0;
     double totalVolume = 0.0;
-    
+
     // Check if at least one set is completed
     bool hasAnyCompleted = false;
     for (final exerciseSets in _setsData.values) {
@@ -122,12 +120,14 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Aucun set complété'),
-          content: const Text('Veuillez cocher au moins un set comme complété (bouton de validation à droite) pour enregistrer la séance.'),
+          content: const Text(
+            'Veuillez cocher au moins un set comme complété (bouton de validation à droite) pour enregistrer la séance.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: const Text('D\'accord'),
-            )
+            ),
           ],
         ),
       );
@@ -142,14 +142,14 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
         if (set.isCompleted) {
           final reps = int.tryParse(set.repsController.text) ?? 0;
           final weight = double.tryParse(set.weightController.text) ?? 0.0;
-          
+
           await _sessionController.addLog(
             exerciseName: exerciseName,
             setNumber: set.setNumber,
             reps: reps,
             weight: weight,
           );
-          
+
           completedSetsCount++;
           totalVolume += (reps * weight);
         }
@@ -197,7 +197,9 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text('Abandonner l\'entraînement ?'),
-                  content: const Text('Les séries complétées ne seront pas enregistrées.'),
+                  content: const Text(
+                    'Les séries complétées ne seront pas enregistrées.',
+                  ),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
@@ -208,7 +210,9 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
                         Navigator.pop(context); // Dialog
                         Navigator.pop(context); // ActiveSessionScreen
                       },
-                      style: TextButton.styleFrom(foregroundColor: Colors.redAccent),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                      ),
                       child: const Text('Abandonner'),
                     ),
                   ],
@@ -219,7 +223,7 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
               'Annuler',
               style: TextStyle(color: Colors.redAccent),
             ),
-          )
+          ),
         ],
       ),
       body: Column(
@@ -230,9 +234,7 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
             width: double.infinity,
             decoration: const BoxDecoration(
               color: AppColors.surface,
-              border: Border(
-                bottom: BorderSide(color: AppColors.border),
-              ),
+              border: Border(bottom: BorderSide(color: AppColors.border)),
             ),
             child: Column(
               children: [
@@ -257,7 +259,7 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
               ],
             ),
           ),
-          
+
           // Exercises List
           Expanded(
             child: widget.workout.exercises.isEmpty
@@ -277,7 +279,7 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
                     itemBuilder: (context, exIndex) {
                       final exerciseName = widget.workout.exercises[exIndex];
                       final sets = _setsData[exerciseName] ?? [];
-                      
+
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 16),
                         child: AppCard(
@@ -293,159 +295,226 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
                                   color: Colors.white,
                                 ),
                               ),
-                            const SizedBox(height: 12),
-                            
-                            // Column Headers
-                            const Row(
-                              children: [
-                                SizedBox(width: 30, child: Text('SÉRIE', style: TextStyle(fontSize: 10, color: AppColors.textSecondary))),
-                                Expanded(child: Center(child: Text('POIDS (KG)', style: TextStyle(fontSize: 10, color: AppColors.textSecondary)))),
-                                Expanded(child: Center(child: Text('REPS', style: TextStyle(fontSize: 10, color: AppColors.textSecondary)))),
-                                SizedBox(width: 45, child: Center(child: Text('STATUT', style: TextStyle(fontSize: 10, color: AppColors.textSecondary)))),
-                              ],
-                            ),
-                            const Divider(color: AppColors.border, height: 16),
-                            
-                            // Sets list
-                            ...List.generate(sets.length, (index) {
-                              final set = sets[index];
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                child: Row(
-                                  children: [
-                                    // Set Number
-                                    SizedBox(
-                                      width: 30,
-                                      child: CircleAvatar(
-                                        radius: 12,
-                                        backgroundColor: set.isCompleted
-                                            ? AppColors.primary
-                                            : AppColors.border,
-                                        child: Text(
-                                          '${set.setNumber}',
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.bold,
-                                            color: set.isCompleted ? Colors.black : Colors.white,
-                                          ),
+                              const SizedBox(height: 12),
+
+                              // Column Headers
+                              const Row(
+                                children: [
+                                  SizedBox(
+                                    width: 30,
+                                    child: Text(
+                                      'SÉRIE',
+                                      style: TextStyle(
+                                        fontSize: 10,
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        'POIDS (KG)',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: AppColors.textSecondary,
                                         ),
                                       ),
                                     ),
-                                    
-                                    // Weight Input
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                        child: TextField(
-                                          controller: set.weightController,
-                                          keyboardType: TextInputType.number,
-                                          textAlign: TextAlign.center,
-                                          enabled: !set.isCompleted,
-                                          style: TextStyle(
-                                            color: set.isCompleted ? AppColors.textSecondary : Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          decoration: InputDecoration(
-                                            contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                                            isDense: true,
-                                            fillColor: set.isCompleted
-                                                ? AppColors.background
-                                                : AppColors.surface,
-                                          ),
+                                  ),
+                                  Expanded(
+                                    child: Center(
+                                      child: Text(
+                                        'REPS',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: AppColors.textSecondary,
                                         ),
                                       ),
                                     ),
-                                    
-                                    // Reps Input
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                                        child: TextField(
-                                          controller: set.repsController,
-                                          keyboardType: TextInputType.number,
-                                          textAlign: TextAlign.center,
-                                          enabled: !set.isCompleted,
-                                          style: TextStyle(
-                                            color: set.isCompleted ? AppColors.textSecondary : Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          decoration: InputDecoration(
-                                            contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                                            isDense: true,
-                                            fillColor: set.isCompleted
-                                                ? AppColors.background
-                                                : AppColors.surface,
-                                          ),
+                                  ),
+                                  SizedBox(
+                                    width: 45,
+                                    child: Center(
+                                      child: Text(
+                                        'STATUT',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: AppColors.textSecondary,
                                         ),
                                       ),
                                     ),
-                                    
-                                    // Complete Checkbox Button
-                                    SizedBox(
-                                      width: 45,
-                                      child: IconButton(
-                                        icon: Icon(
-                                          set.isCompleted 
-                                              ? Icons.check_circle 
-                                              : Icons.radio_button_unchecked,
-                                          color: set.isCompleted 
-                                              ? AppColors.primary 
-                                              : AppColors.textSecondary,
+                                  ),
+                                ],
+                              ),
+                              const Divider(
+                                color: AppColors.border,
+                                height: 16,
+                              ),
+
+                              // Sets list
+                              ...List.generate(sets.length, (index) {
+                                final set = sets[index];
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 4.0,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      // Set Number
+                                      SizedBox(
+                                        width: 30,
+                                        child: CircleAvatar(
+                                          radius: 12,
+                                          backgroundColor: set.isCompleted
+                                              ? AppColors.primary
+                                              : AppColors.border,
+                                          child: Text(
+                                            '${set.setNumber}',
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                              color: set.isCompleted
+                                                  ? Colors.black
+                                                  : Colors.white,
+                                            ),
+                                          ),
                                         ),
-                                        onPressed: () {
-                                          setState(() {
-                                            set.isCompleted = !set.isCompleted;
-                                          });
-                                        },
                                       ),
+
+                                      // Weight Input
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0,
+                                          ),
+                                          child: TextField(
+                                            controller: set.weightController,
+                                            keyboardType: TextInputType.number,
+                                            textAlign: TextAlign.center,
+                                            enabled: !set.isCompleted,
+                                            style: TextStyle(
+                                              color: set.isCompleted
+                                                  ? AppColors.textSecondary
+                                                  : Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            decoration: InputDecoration(
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 8,
+                                                  ),
+                                              isDense: true,
+                                              fillColor: set.isCompleted
+                                                  ? AppColors.background
+                                                  : AppColors.surface,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Reps Input
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0,
+                                          ),
+                                          child: TextField(
+                                            controller: set.repsController,
+                                            keyboardType: TextInputType.number,
+                                            textAlign: TextAlign.center,
+                                            enabled: !set.isCompleted,
+                                            style: TextStyle(
+                                              color: set.isCompleted
+                                                  ? AppColors.textSecondary
+                                                  : Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            decoration: InputDecoration(
+                                              contentPadding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 8,
+                                                  ),
+                                              isDense: true,
+                                              fillColor: set.isCompleted
+                                                  ? AppColors.background
+                                                  : AppColors.surface,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                      // Complete Checkbox Button
+                                      SizedBox(
+                                        width: 45,
+                                        child: IconButton(
+                                          icon: Icon(
+                                            set.isCompleted
+                                                ? Icons.check_circle
+                                                : Icons.radio_button_unchecked,
+                                            color: set.isCompleted
+                                                ? AppColors.primary
+                                                : AppColors.textSecondary,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              set.isCompleted =
+                                                  !set.isCompleted;
+                                            });
+                                          },
+                                        ),
+                                      ),
+
+                                      // Delete Set Button (only visible if editing)
+                                      if (!set.isCompleted && sets.length > 1)
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.close,
+                                            size: 16,
+                                            color: Colors.redAccent,
+                                          ),
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                          onPressed: () =>
+                                              _removeSet(exerciseName, index),
+                                        ),
+                                    ],
+                                  ),
+                                );
+                              }),
+
+                              const SizedBox(height: 12),
+
+                              // Add set Button
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed: () => _addSet(exerciseName),
+                                  icon: const Icon(Icons.add, size: 16),
+                                  label: const Text('Ajouter un set'),
+                                  style: OutlinedButton.styleFrom(
+                                    side: const BorderSide(
+                                      color: AppColors.border,
                                     ),
-                                    
-                                    // Delete Set Button (only visible if editing)
-                                    if (!set.isCompleted && sets.length > 1)
-                                      IconButton(
-                                        icon: const Icon(Icons.close, size: 16, color: Colors.redAccent),
-                                        padding: EdgeInsets.zero,
-                                        constraints: const BoxConstraints(),
-                                        onPressed: () => _removeSet(exerciseName, index),
-                                      ),
-                                  ],
-                                ),
-                              );
-                            }),
-                            
-                            const SizedBox(height: 12),
-                            
-                            // Add set Button
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton.icon(
-                                onPressed: () => _addSet(exerciseName),
-                                icon: const Icon(Icons.add, size: 16),
-                                label: const Text('Ajouter un set'),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: AppColors.border),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
                   ),
           ),
-          
+
           // Complete Workout Button
           Container(
             padding: const EdgeInsets.all(16),
             decoration: const BoxDecoration(
               color: AppColors.surface,
-              border: Border(
-                top: BorderSide(color: AppColors.border),
-              ),
+              border: Border(top: BorderSide(color: AppColors.border)),
             ),
             child: SafeArea(
               child: SizedBox(
@@ -455,12 +524,16 @@ class _ActiveSessionScreenState extends State<ActiveSessionScreen> {
                   icon: const Icon(Icons.done_all, color: Colors.black),
                   label: const Text(
                     'Terminer la séance',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
                   ),
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -478,8 +551,8 @@ class SetInfo {
     required String reps,
     required String weight,
     this.isCompleted = false,
-  })  : repsController = TextEditingController(text: reps),
-        weightController = TextEditingController(text: weight);
+  }) : repsController = TextEditingController(text: reps),
+       weightController = TextEditingController(text: weight);
 
   void dispose() {
     repsController.dispose();

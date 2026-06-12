@@ -49,9 +49,9 @@ class _LogSessionScreenState extends State<LogSessionScreen> {
     );
     _setCtrl.text = (int.parse(_setCtrl.text) + 1).toString();
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Set enregistré')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Set enregistré')));
   }
 
   @override

@@ -7,7 +7,6 @@ import '../../widgets/app_button.dart';
 import '../../widgets/app_card.dart';
 import '../../widgets/app_text_field.dart';
 import '../home/home_screen.dart';
-import '../onboarding/account_info_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -21,7 +20,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailCtrl = TextEditingController(text: 'demo@aurafit.ma');
+  final _emailCtrl = TextEditingController(text: 'demo@harder.com');
   final _passwordCtrl = TextEditingController(text: '1234');
   String? _error;
 
@@ -65,7 +64,11 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 30),
               const Text(
                 'HARDER',
-                style: TextStyle(fontSize: 44, fontWeight: FontWeight.w900, letterSpacing: 1.5),
+                style: TextStyle(
+                  fontSize: 44,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5,
+                ),
               ),
               const SizedBox(height: 8),
               const Text(
@@ -95,7 +98,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       if (_error != null) ...[
                         const SizedBox(height: 12),
-                        Text(_error!, style: const TextStyle(color: Colors.redAccent)),
+                        Text(
+                          _error!,
+                          style: const TextStyle(color: Colors.redAccent),
+                        ),
                       ],
                       const SizedBox(height: 18),
                       AppButton(
@@ -119,23 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              TextButton.icon(
-                onPressed: () async {
-                  await widget.authController.register('demo@aurafit.ma', '1234');
-                  if (!context.mounted) return;
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AccountInfoScreen(
-                        authController: widget.authController,
-                      ),
-                    ),
-                  );
-                },
-                icon: const Icon(Icons.flash_on),
-                label: const Text('Démarrer avec un compte démo'),
               ),
             ],
           ),

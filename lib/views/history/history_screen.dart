@@ -47,7 +47,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.history),
                 title: Text(log.exerciseName),
-                subtitle: Text('Set ${log.setNumber}: ${log.reps} reps x ${log.weight} kg'),
+                subtitle: Text(
+                  'Set ${log.setNumber}: ${log.reps} reps x ${log.weight} kg',
+                ),
               ),
             );
           },

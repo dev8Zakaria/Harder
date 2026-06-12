@@ -64,7 +64,10 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Calories', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Calories',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -80,7 +83,10 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
                       children: [
                         const Text(
                           'Enregistrer des calories',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                         const SizedBox(height: 16),
                         AppTextField(
@@ -122,7 +128,10 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
                             icon: const Icon(Icons.check, color: Colors.black),
                             label: const Text(
                               'Enregistrer',
-                              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
@@ -140,18 +149,41 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
                       children: [
                         const Text(
                           'Calories vs Objectif (Derniers 7 jours)',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            Container(width: 12, height: 12, color: AppColors.primary),
+                            Container(
+                              width: 12,
+                              height: 12,
+                              color: AppColors.primary,
+                            ),
                             const SizedBox(width: 4),
-                            const Text('Consommé', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                            const Text(
+                              'Consommé',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
+                            ),
                             const SizedBox(width: 16),
-                            Container(width: 12, height: 12, color: AppColors.blue),
+                            Container(
+                              width: 12,
+                              height: 12,
+                              color: AppColors.blue,
+                            ),
                             const SizedBox(width: 4),
-                            const Text('Objectif', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                            const Text(
+                              'Objectif',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Colors.grey,
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 24),
@@ -163,23 +195,35 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
                               borderData: FlBorderData(show: false),
                               titlesData: FlTitlesData(
                                 show: true,
-                                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                rightTitles: const AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                                topTitles: const AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
                                 bottomTitles: AxisTitles(
                                   sideTitles: SideTitles(
                                     showTitles: true,
                                     getTitlesWidget: (value, meta) {
                                       int idx = value.toInt();
                                       final last7 = _entries.take(7).toList();
-                                      if (idx < 0 || idx >= last7.length) return const SizedBox();
-                                      
+                                      if (idx < 0 || idx >= last7.length) {
+                                        return const SizedBox();
+                                      }
+
                                       // chronological: oldest first on left
-                                      final entry = last7[last7.length - 1 - idx];
+                                      final entry =
+                                          last7[last7.length - 1 - idx];
                                       final dateParts = entry.date.split('-');
-                                      final displayDate = dateParts.length > 2 ? '${dateParts[1]}/${dateParts[2]}' : '';
+                                      final displayDate = dateParts.length > 2
+                                          ? '${dateParts[1]}/${dateParts[2]}'
+                                          : '';
                                       return Text(
                                         displayDate,
-                                        style: const TextStyle(fontSize: 8, color: Colors.grey),
+                                        style: const TextStyle(
+                                          fontSize: 8,
+                                          color: Colors.grey,
+                                        ),
                                       );
                                     },
                                   ),
@@ -224,7 +268,7 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Logs list
                 _entries.isEmpty
                     ? const Padding(
@@ -248,11 +292,17 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
                               contentPadding: EdgeInsets.zero,
                               leading: const CircleAvatar(
                                 backgroundColor: Color(0xFF384046),
-                                child: Icon(Icons.local_fire_department, color: AppColors.primary),
+                                child: Icon(
+                                  Icons.local_fire_department,
+                                  color: AppColors.primary,
+                                ),
                               ),
                               title: Text(
                                 '${entry.remaining} kcal restantes',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                               subtitle: Padding(
                                 padding: const EdgeInsets.only(top: 4.0),

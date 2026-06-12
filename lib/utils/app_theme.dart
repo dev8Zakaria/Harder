@@ -13,6 +13,7 @@ class AppTheme {
       colorScheme: const ColorScheme.dark(
         primary: AppColors.primary,
         surface: AppColors.surface,
+        secondary: AppColors.blue,
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.background,
@@ -69,6 +70,12 @@ class AppTheme {
           textStyle: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: AppColors.surface,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.textSecondary,
+        type: BottomNavigationBarType.fixed,
+      ),
       cardTheme: const CardThemeData(
         color: AppColors.surface,
         elevation: 0,
@@ -92,6 +99,7 @@ class AppTheme {
       colorScheme: const ColorScheme.light(
         primary: AppColors.primary,
         surface: AppColors.surfaceLight,
+        secondary: AppColors.blue,
       ),
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.backgroundLight,
@@ -123,7 +131,9 @@ class AppTheme {
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          foregroundColor: const Color(0xFF192126), // Dark text for contrast on lime
+          foregroundColor: const Color(
+            0xFF192126,
+          ), // Dark text for contrast on lime
           elevation: 0,
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
           textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -147,6 +157,12 @@ class AppTheme {
           foregroundColor: AppColors.textPrimaryLight,
           textStyle: const TextStyle(fontWeight: FontWeight.bold),
         ),
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: AppColors.surfaceLight,
+        selectedItemColor: Color(0xFF71A900),
+        unselectedItemColor: AppColors.textSecondaryLight,
+        type: BottomNavigationBarType.fixed,
       ),
       cardTheme: const CardThemeData(
         color: AppColors.surfaceLight,

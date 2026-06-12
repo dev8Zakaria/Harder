@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 
@@ -23,11 +24,13 @@ class AddExercisesScreen extends StatefulWidget {
 class _AddExercisesScreenState extends State<AddExercisesScreen> {
   late final ExerciseController _exerciseController;
   late final WorkoutController _workoutController;
-  
+
   List<ExerciseModel> _allExercises = [];
   List<ExerciseModel> _filteredExercises = [];
   List<String> _selectedExerciseNames = [];
   bool _loading = true;
+  bool _searching = false;
+  Timer? _searchDebounce;
   final _searchController = TextEditingController();
 
   @override
@@ -37,11 +40,12 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
     _workoutController = WorkoutController(widget.workout.userId);
     _selectedExerciseNames = List<String>.from(widget.workout.exercises);
     _load();
-    _searchController.addListener(_filter);
+    _searchController.addListener(_onSearchChanged);
   }
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -55,7 +59,7 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
           _allExercises = [...custom, ...official];
           _loading = false;
         });
-        _filter(); // Preserve any filter query typed while loading
+        _filterLocal();
       }
     } catch (_) {
       if (mounted) {
@@ -64,7 +68,33 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
     }
   }
 
-  void _filter() {
+  void _onSearchChanged() {
+    _filterLocal();
+    _searchDebounce?.cancel();
+    final query = _searchController.text.trim();
+    if (query.length < 2) {
+      return;
+    }
+    _searchDebounce = Timer(const Duration(milliseconds: 450), () {
+      _searchRemote(query);
+    });
+  }
+
+  Future<void> _searchRemote(String query) async {
+    setState(() => _searching = true);
+    final apiResults = await _exerciseController.searchOfficialExercises(query);
+    final custom = await _exerciseController.customExercises();
+    if (!mounted || _searchController.text.trim() != query) {
+      return;
+    }
+    setState(() {
+      _allExercises = [...custom, ...apiResults];
+      _searching = false;
+    });
+    _filterLocal();
+  }
+
+  void _filterLocal() {
     final query = _searchController.text.toLowerCase().trim();
     setState(() {
       if (query.isEmpty) {
@@ -154,7 +184,7 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
             imagePath: imagePath,
           );
           await _load();
-          _filter();
+          _filterLocal();
         },
       ),
     );
@@ -164,7 +194,10 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sélectionner exercices', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Sélectionner exercices',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -197,7 +230,10 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
               children: [
                 // Search Bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   child: TextField(
                     controller: _searchController,
                     decoration: InputDecoration(
@@ -225,33 +261,53 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                
+                if (_searching)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: LinearProgressIndicator(minHeight: 3),
+                  ),
+
                 // Exercise List
                 Expanded(
                   child: _filteredExercises.isEmpty
-                      ? const Center(
-                          child: Text(
-                            'Aucun exercice trouvé',
-                            style: TextStyle(color: Colors.grey),
-                          ),
+                      ? _EmptySearchState(
+                          query: _searchController.text.trim(),
+                          onCreate: _openForm,
+                          onSuggestion: (value) {
+                            _searchController.text = value;
+                            _searchController.selection =
+                                TextSelection.fromPosition(
+                                  TextPosition(offset: value.length),
+                                );
+                          },
                         )
                       : ListView.separated(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 10,
+                          ),
                           itemCount: _filteredExercises.length,
-                          separatorBuilder: (_, __) => const SizedBox(height: 12),
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             final exercise = _filteredExercises[index];
-                            final isSelected = _selectedExerciseNames.contains(exercise.name);
-                            
+                            final isSelected = _selectedExerciseNames.contains(
+                              exercise.name,
+                            );
+
                             return AppCard(
                               child: CheckboxListTile(
-                                activeColor: Theme.of(context).colorScheme.primary,
+                                activeColor: Theme.of(
+                                  context,
+                                ).colorScheme.primary,
                                 checkColor: Colors.black,
                                 contentPadding: EdgeInsets.zero,
                                 value: isSelected,
                                 title: Text(
                                   exercise.name,
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                                 subtitle: Text(
                                   '${exercise.bodyPart} • ${exercise.targetMuscle} • ${exercise.equipment}',
@@ -261,11 +317,17 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
                                 onChanged: (bool? checked) {
                                   setState(() {
                                     if (checked == true) {
-                                      if (!_selectedExerciseNames.contains(exercise.name)) {
-                                        _selectedExerciseNames.add(exercise.name);
+                                      if (!_selectedExerciseNames.contains(
+                                        exercise.name,
+                                      )) {
+                                        _selectedExerciseNames.add(
+                                          exercise.name,
+                                        );
                                       }
                                     } else {
-                                      _selectedExerciseNames.remove(exercise.name);
+                                      _selectedExerciseNames.remove(
+                                        exercise.name,
+                                      );
                                     }
                                   });
                                 },
@@ -276,6 +338,70 @@ class _AddExercisesScreenState extends State<AddExercisesScreen> {
                 ),
               ],
             ),
+    );
+  }
+}
+
+class _EmptySearchState extends StatelessWidget {
+  final String query;
+  final VoidCallback onCreate;
+  final ValueChanged<String> onSuggestion;
+
+  const _EmptySearchState({
+    required this.query,
+    required this.onCreate,
+    required this.onSuggestion,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final suggestions = ['bench press', 'squat', 'deadlift', 'pull-up'];
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 28, 20, 20),
+      children: [
+        Icon(
+          Icons.search_off_rounded,
+          size: 48,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        const SizedBox(height: 16),
+        Text(
+          query.isEmpty
+              ? 'Recherchez un exercice'
+              : 'Aucun résultat pour "$query"',
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Essayez un nom en anglais ExerciseDB ou créez votre propre exercice.',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.grey),
+        ),
+        const SizedBox(height: 20),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 8,
+          runSpacing: 8,
+          children: suggestions
+              .map(
+                (suggestion) => ActionChip(
+                  label: Text(suggestion),
+                  onPressed: () => onSuggestion(suggestion),
+                ),
+              )
+              .toList(),
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton.icon(
+          onPressed: onCreate,
+          icon: const Icon(
+            Icons.add_photo_alternate_outlined,
+            color: Color(0xFF192126),
+          ),
+          label: const Text('Créer un exercice personnalisé'),
+        ),
+      ],
     );
   }
 }
@@ -295,7 +421,8 @@ class _ExerciseAvatar extends StatelessWidget {
           width: 48,
           height: 48,
           fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => _fallbackIcon(Icons.image_not_supported_outlined),
+          errorBuilder: (_, _, _) =>
+              _fallbackIcon(Icons.image_not_supported_outlined),
         ),
       );
     }
@@ -334,7 +461,8 @@ class _ExerciseForm extends StatefulWidget {
     String target,
     String equipment,
     String? imagePath,
-  ) onSave;
+  )
+  onSave;
 
   const _ExerciseForm({required this.onSave});
 
@@ -345,10 +473,54 @@ class _ExerciseForm extends StatefulWidget {
 class _ExerciseFormState extends State<_ExerciseForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
-  final _bodyCtrl = TextEditingController();
-  final _targetCtrl = TextEditingController();
-  final _equipmentCtrl = TextEditingController();
+  String _bodyPart = 'chest';
+  String _targetMuscle = 'pectorals';
+  String _equipment = 'barbell';
   String? _imagePath;
+
+  static const _bodyParts = [
+    'back',
+    'cardio',
+    'chest',
+    'lower arms',
+    'lower legs',
+    'neck',
+    'shoulders',
+    'upper arms',
+    'upper legs',
+    'waist',
+  ];
+
+  static const _targetMuscles = [
+    'abs',
+    'biceps',
+    'calves',
+    'delts',
+    'forearms',
+    'glutes',
+    'hamstrings',
+    'lats',
+    'pectorals',
+    'quads',
+    'spine',
+    'traps',
+    'triceps',
+  ];
+
+  static const _equipmentOptions = [
+    'assisted',
+    'band',
+    'barbell',
+    'body weight',
+    'cable',
+    'dumbbell',
+    'ez barbell',
+    'kettlebell',
+    'leverage machine',
+    'medicine ball',
+    'resistance band',
+    'smith machine',
+  ];
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -360,9 +532,6 @@ class _ExerciseFormState extends State<_ExerciseForm> {
   @override
   void dispose() {
     _nameCtrl.dispose();
-    _bodyCtrl.dispose();
-    _targetCtrl.dispose();
-    _equipmentCtrl.dispose();
     super.dispose();
   }
 
@@ -387,13 +556,36 @@ class _ExerciseFormState extends State<_ExerciseForm> {
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              AppTextField(controller: _nameCtrl, label: 'Nom', icon: Icons.title, validator: Validators.requiredText),
+              AppTextField(
+                controller: _nameCtrl,
+                label: 'Nom',
+                icon: Icons.title,
+                validator: Validators.requiredText,
+              ),
               const SizedBox(height: 12),
-              AppTextField(controller: _bodyCtrl, label: 'Partie du corps', icon: Icons.accessibility_new, validator: Validators.requiredText),
+              _DropdownField(
+                label: 'Partie du corps',
+                icon: Icons.accessibility_new,
+                value: _bodyPart,
+                values: _bodyParts,
+                onChanged: (value) => setState(() => _bodyPart = value),
+              ),
               const SizedBox(height: 12),
-              AppTextField(controller: _targetCtrl, label: 'Muscle ciblé', icon: Icons.track_changes, validator: Validators.requiredText),
+              _DropdownField(
+                label: 'Muscle ciblé',
+                icon: Icons.track_changes,
+                value: _targetMuscle,
+                values: _targetMuscles,
+                onChanged: (value) => setState(() => _targetMuscle = value),
+              ),
               const SizedBox(height: 12),
-              AppTextField(controller: _equipmentCtrl, label: 'Equipement', icon: Icons.fitness_center, validator: Validators.requiredText),
+              _DropdownField(
+                label: 'Equipement',
+                icon: Icons.fitness_center,
+                value: _equipment,
+                values: _equipmentOptions,
+                onChanged: (value) => setState(() => _equipment = value),
+              ),
               const SizedBox(height: 16),
               if (_imagePath != null) ...[
                 ClipRRect(
@@ -412,7 +604,11 @@ class _ExerciseFormState extends State<_ExerciseForm> {
                 child: OutlinedButton.icon(
                   onPressed: _pickImage,
                   icon: const Icon(Icons.image_outlined),
-                  label: Text(_imagePath == null ? 'Ajouter une image' : 'Changer l\'image'),
+                  label: Text(
+                    _imagePath == null
+                        ? 'Ajouter une image'
+                        : 'Changer l\'image',
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -423,21 +619,63 @@ class _ExerciseFormState extends State<_ExerciseForm> {
                     if (!_formKey.currentState!.validate()) return;
                     await widget.onSave(
                       _nameCtrl.text.trim(),
-                      _bodyCtrl.text.trim(),
-                      _targetCtrl.text.trim(),
-                      _equipmentCtrl.text.trim(),
+                      _bodyPart,
+                      _targetMuscle,
+                      _equipment,
                       _imagePath,
                     );
                     if (context.mounted) Navigator.pop(context);
                   },
                   icon: const Icon(Icons.check, color: Colors.black),
-                  label: const Text('Créer l\'exercice', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  label: const Text(
+                    'Créer l\'exercice',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _DropdownField extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final String value;
+  final List<String> values;
+  final ValueChanged<String> onChanged;
+
+  const _DropdownField({
+    required this.label,
+    required this.icon,
+    required this.value,
+    required this.values,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      isExpanded: true,
+      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
+      dropdownColor: Theme.of(context).cardColor,
+      items: values
+          .map(
+            (item) => DropdownMenuItem<String>(value: item, child: Text(item)),
+          )
+          .toList(),
+      onChanged: (selected) {
+        if (selected != null) {
+          onChanged(selected);
+        }
+      },
     );
   }
 }

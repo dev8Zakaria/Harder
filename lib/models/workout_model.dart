@@ -21,7 +21,8 @@ class WorkoutModel {
     List<String> parsedExercises = [];
     if (map['exercises'] != null && map['exercises'].toString().isNotEmpty) {
       try {
-        final List<dynamic> decoded = jsonDecode(map['exercises'] as String) as List<dynamic>;
+        final List<dynamic> decoded =
+            jsonDecode(map['exercises'] as String) as List<dynamic>;
         parsedExercises = decoded.map((e) => e.toString()).toList();
       } catch (_) {}
     }

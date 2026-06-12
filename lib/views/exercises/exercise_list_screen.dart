@@ -64,7 +64,9 @@ class _ExerciseListScreenState extends State<ExerciseListScreen> {
                 contentPadding: EdgeInsets.zero,
                 leading: _ExerciseAvatar(exercise: exercise),
                 title: Text(exercise.name),
-                subtitle: Text('${exercise.bodyPart} - ${exercise.targetMuscle} - ${exercise.equipment}'),
+                subtitle: Text(
+                  '${exercise.bodyPart} - ${exercise.targetMuscle} - ${exercise.equipment}',
+                ),
                 trailing: exercise.source == 'custom' && exercise.id != null
                     ? IconButton(
                         icon: const Icon(Icons.delete_outline),
@@ -109,7 +111,8 @@ class _ExerciseForm extends StatefulWidget {
     String target,
     String equipment,
     String? imagePath,
-  ) onSave;
+  )
+  onSave;
 
   const _ExerciseForm({required this.onSave});
 
@@ -120,10 +123,54 @@ class _ExerciseForm extends StatefulWidget {
 class _ExerciseFormState extends State<_ExerciseForm> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
-  final _bodyCtrl = TextEditingController();
-  final _targetCtrl = TextEditingController();
-  final _equipmentCtrl = TextEditingController();
+  String _bodyPart = 'chest';
+  String _targetMuscle = 'pectorals';
+  String _equipment = 'barbell';
   String? _imagePath;
+
+  static const _bodyParts = [
+    'back',
+    'cardio',
+    'chest',
+    'lower arms',
+    'lower legs',
+    'neck',
+    'shoulders',
+    'upper arms',
+    'upper legs',
+    'waist',
+  ];
+
+  static const _targetMuscles = [
+    'abs',
+    'biceps',
+    'calves',
+    'delts',
+    'forearms',
+    'glutes',
+    'hamstrings',
+    'lats',
+    'pectorals',
+    'quads',
+    'spine',
+    'traps',
+    'triceps',
+  ];
+
+  static const _equipmentOptions = [
+    'assisted',
+    'band',
+    'barbell',
+    'body weight',
+    'cable',
+    'dumbbell',
+    'ez barbell',
+    'kettlebell',
+    'leverage machine',
+    'medicine ball',
+    'resistance band',
+    'smith machine',
+  ];
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -137,9 +184,6 @@ class _ExerciseFormState extends State<_ExerciseForm> {
   @override
   void dispose() {
     _nameCtrl.dispose();
-    _bodyCtrl.dispose();
-    _targetCtrl.dispose();
-    _equipmentCtrl.dispose();
     super.dispose();
   }
 
@@ -157,13 +201,36 @@ class _ExerciseFormState extends State<_ExerciseForm> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AppTextField(controller: _nameCtrl, label: 'Nom', icon: Icons.title, validator: Validators.requiredText),
+            AppTextField(
+              controller: _nameCtrl,
+              label: 'Nom',
+              icon: Icons.title,
+              validator: Validators.requiredText,
+            ),
             const SizedBox(height: 12),
-            AppTextField(controller: _bodyCtrl, label: 'Partie du corps', icon: Icons.accessibility_new, validator: Validators.requiredText),
+            _DropdownField(
+              label: 'Partie du corps',
+              icon: Icons.accessibility_new,
+              value: _bodyPart,
+              values: _bodyParts,
+              onChanged: (value) => setState(() => _bodyPart = value),
+            ),
             const SizedBox(height: 12),
-            AppTextField(controller: _targetCtrl, label: 'Muscle ciblé', icon: Icons.track_changes, validator: Validators.requiredText),
+            _DropdownField(
+              label: 'Muscle ciblé',
+              icon: Icons.track_changes,
+              value: _targetMuscle,
+              values: _targetMuscles,
+              onChanged: (value) => setState(() => _targetMuscle = value),
+            ),
             const SizedBox(height: 12),
-            AppTextField(controller: _equipmentCtrl, label: 'Equipement', icon: Icons.fitness_center, validator: Validators.requiredText),
+            _DropdownField(
+              label: 'Equipement',
+              icon: Icons.fitness_center,
+              value: _equipment,
+              values: _equipmentOptions,
+              onChanged: (value) => setState(() => _equipment = value),
+            ),
             const SizedBox(height: 12),
             if (_imagePath != null) ...[
               ClipRRect(
@@ -195,9 +262,9 @@ class _ExerciseFormState extends State<_ExerciseForm> {
                   if (!_formKey.currentState!.validate()) return;
                   await widget.onSave(
                     _nameCtrl.text.trim(),
-                    _bodyCtrl.text.trim(),
-                    _targetCtrl.text.trim(),
-                    _equipmentCtrl.text.trim(),
+                    _bodyPart,
+                    _targetMuscle,
+                    _equipment,
                     _imagePath,
                   );
                   if (context.mounted) Navigator.pop(context);
@@ -209,6 +276,42 @@ class _ExerciseFormState extends State<_ExerciseForm> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _DropdownField extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final String value;
+  final List<String> values;
+  final ValueChanged<String> onChanged;
+
+  const _DropdownField({
+    required this.label,
+    required this.icon,
+    required this.value,
+    required this.values,
+    required this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      value: value,
+      isExpanded: true,
+      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon)),
+      dropdownColor: Theme.of(context).cardColor,
+      items: values
+          .map(
+            (item) => DropdownMenuItem<String>(value: item, child: Text(item)),
+          )
+          .toList(),
+      onChanged: (selected) {
+        if (selected != null) {
+          onChanged(selected);
+        }
+      },
     );
   }
 }

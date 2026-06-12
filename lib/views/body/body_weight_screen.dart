@@ -57,7 +57,10 @@ class _BodyWeightScreenState extends State<BodyWeightScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Suivi du Poids', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Suivi du Poids',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -73,7 +76,10 @@ class _BodyWeightScreenState extends State<BodyWeightScreen> {
                       children: [
                         const Text(
                           'Enregistrer un nouveau poids',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Row(
@@ -91,9 +97,15 @@ class _BodyWeightScreenState extends State<BodyWeightScreen> {
                             ElevatedButton(
                               onPressed: _add,
                               style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 18,
+                                  horizontal: 20,
+                                ),
                               ),
-                              child: const Icon(Icons.check, color: Colors.black),
+                              child: const Icon(
+                                Icons.check,
+                                color: Colors.black,
+                              ),
                             ),
                           ],
                         ),
@@ -111,7 +123,10 @@ class _BodyWeightScreenState extends State<BodyWeightScreen> {
                       children: [
                         const Text(
                           'Historique de progression',
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
                         ),
                         const SizedBox(height: 24),
                         SizedBox(
@@ -121,8 +136,12 @@ class _BodyWeightScreenState extends State<BodyWeightScreen> {
                               gridData: const FlGridData(show: false),
                               titlesData: FlTitlesData(
                                 show: true,
-                                rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                                topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                rightTitles: const AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
+                                topTitles: const AxisTitles(
+                                  sideTitles: SideTitles(showTitles: false),
+                                ),
                                 bottomTitles: AxisTitles(
                                   sideTitles: SideTitles(
                                     showTitles: true,
@@ -133,12 +152,19 @@ class _BodyWeightScreenState extends State<BodyWeightScreen> {
                                         return const SizedBox();
                                       }
                                       // Get dates in chronological order (oldest first)
-                                      final dateStr = _weights[_weights.length - 1 - idx].date;
+                                      final dateStr =
+                                          _weights[_weights.length - 1 - idx]
+                                              .date;
                                       final dateParts = dateStr.split('-');
-                                      final displayDate = dateParts.length > 2 ? '${dateParts[1]}/${dateParts[2]}' : '';
+                                      final displayDate = dateParts.length > 2
+                                          ? '${dateParts[1]}/${dateParts[2]}'
+                                          : '';
                                       return Text(
                                         displayDate,
-                                        style: const TextStyle(fontSize: 8, color: Colors.grey),
+                                        style: const TextStyle(
+                                          fontSize: 8,
+                                          color: Colors.grey,
+                                        ),
                                       );
                                     },
                                   ),
@@ -150,7 +176,10 @@ class _BodyWeightScreenState extends State<BodyWeightScreen> {
                                     getTitlesWidget: (value, meta) {
                                       return Text(
                                         '${value.toInt()}kg',
-                                        style: const TextStyle(fontSize: 8, color: Colors.grey),
+                                        style: const TextStyle(
+                                          fontSize: 8,
+                                          color: Colors.grey,
+                                        ),
                                       );
                                     },
                                   ),
@@ -161,7 +190,9 @@ class _BodyWeightScreenState extends State<BodyWeightScreen> {
                                 LineChartBarData(
                                   spots: List.generate(_weights.length, (i) {
                                     // oldest weights first for X-axis left-to-right
-                                    final weightVal = _weights[_weights.length - 1 - i].weight;
+                                    final weightVal =
+                                        _weights[_weights.length - 1 - i]
+                                            .weight;
                                     return FlSpot(i.toDouble(), weightVal);
                                   }),
                                   isCurved: true,
@@ -189,7 +220,7 @@ class _BodyWeightScreenState extends State<BodyWeightScreen> {
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 12),
-                
+
                 // Logs list
                 _weights.isEmpty
                     ? const Padding(
@@ -213,11 +244,17 @@ class _BodyWeightScreenState extends State<BodyWeightScreen> {
                               contentPadding: EdgeInsets.zero,
                               leading: const CircleAvatar(
                                 backgroundColor: Color(0xFF384046),
-                                child: Icon(Icons.monitor_weight, color: AppColors.primary),
+                                child: Icon(
+                                  Icons.monitor_weight,
+                                  color: AppColors.primary,
+                                ),
                               ),
                               title: Text(
                                 '${weight.weight} kg',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
                               ),
                               trailing: Text(
                                 weight.date,

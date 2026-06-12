@@ -11,7 +11,7 @@ class ThemeManager extends ChangeNotifier {
   bool get isDarkMode => _themeMode == ThemeMode.dark;
 
   void toggleTheme(bool isDark) {
-    _themeMode = ThemeMode.dark;
+    _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
     notifyListeners();
   }
 }

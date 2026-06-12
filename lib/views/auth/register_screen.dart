@@ -45,7 +45,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => AccountInfoScreen(authController: widget.authController),
+        builder: (_) =>
+            AccountInfoScreen(authController: widget.authController),
       ),
     );
   }
@@ -78,7 +79,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 if (_error != null) ...[
                   const SizedBox(height: 12),
-                  Text(_error!, style: const TextStyle(color: Colors.redAccent)),
+                  Text(
+                    _error!,
+                    style: const TextStyle(color: Colors.redAccent),
+                  ),
                 ],
                 const SizedBox(height: 18),
                 AppButton(

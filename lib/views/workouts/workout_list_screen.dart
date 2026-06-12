@@ -70,13 +70,17 @@ class _WorkoutListScreenState extends State<WorkoutListScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => WorkoutDetailsScreen(workout: workout),
+                            builder: (_) =>
+                                WorkoutDetailsScreen(workout: workout),
                           ),
                         ).then((_) => _load());
                       },
                       title: Text(
                         workout.name,
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
                       ),
                       isThreeLine: workout.exercises.isNotEmpty,
                       subtitle: Padding(
@@ -90,18 +94,26 @@ class _WorkoutListScreenState extends State<WorkoutListScreen> {
                       ),
                       leading: const CircleAvatar(
                         backgroundColor: Color(0xFF384046),
-                        child: Icon(Icons.fitness_center, color: Color(0xFFBBF246)),
+                        child: Icon(
+                          Icons.fitness_center,
+                          color: Color(0xFFBBF246),
+                        ),
                       ),
                       trailing: Wrap(
                         crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           IconButton(
-                            icon: const Icon(Icons.play_circle_fill, color: Color(0xFFBBF246), size: 32),
+                            icon: const Icon(
+                              Icons.play_circle_fill,
+                              color: Color(0xFFBBF246),
+                              size: 32,
+                            ),
                             onPressed: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => ActiveSessionScreen(workout: workout),
+                                  builder: (_) =>
+                                      ActiveSessionScreen(workout: workout),
                                 ),
                               ).then((_) => _load());
                             },
@@ -206,7 +218,9 @@ class _WorkoutFormState extends State<_WorkoutForm> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.workout == null ? 'Nouveau Workout' : 'Modifier le Workout',
+              widget.workout == null
+                  ? 'Nouveau Workout'
+                  : 'Modifier le Workout',
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -232,11 +246,28 @@ class _WorkoutFormState extends State<_WorkoutForm> {
               value: _day,
               isExpanded: true,
               dropdownColor: Theme.of(context).cardColor,
-              style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color, fontSize: 16),
-              underline: Container(height: 1, color: Theme.of(context).dividerColor),
-              items: const ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
-                  .map((day) => DropdownMenuItem(value: day, child: Text(day)))
-                  .toList(),
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+                fontSize: 16,
+              ),
+              underline: Container(
+                height: 1,
+                color: Theme.of(context).dividerColor,
+              ),
+              items:
+                  const [
+                        'Lundi',
+                        'Mardi',
+                        'Mercredi',
+                        'Jeudi',
+                        'Vendredi',
+                        'Samedi',
+                        'Dimanche',
+                      ]
+                      .map(
+                        (day) => DropdownMenuItem(value: day, child: Text(day)),
+                      )
+                      .toList(),
               onChanged: (value) => setState(() => _day = value!),
             ),
             const SizedBox(height: 24),
@@ -245,11 +276,21 @@ class _WorkoutFormState extends State<_WorkoutForm> {
               child: ElevatedButton.icon(
                 onPressed: () async {
                   if (!_formKey.currentState!.validate()) return;
-                  await widget.onSave(_nameCtrl.text.trim(), _descCtrl.text.trim(), _day);
+                  await widget.onSave(
+                    _nameCtrl.text.trim(),
+                    _descCtrl.text.trim(),
+                    _day,
+                  );
                   if (context.mounted) Navigator.pop(context);
                 },
                 icon: const Icon(Icons.check, color: Colors.black),
-                label: const Text('Enregistrer', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                label: const Text(
+                  'Enregistrer',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
           ],

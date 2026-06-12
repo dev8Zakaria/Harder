@@ -22,16 +22,21 @@ class ExerciseModel {
   });
 
   factory ExerciseModel.fromJson(Map<String, dynamic> json) {
+    final parsedId = int.tryParse(json['id'].toString());
     String? rawUrl = json['gifUrl']?.toString() ?? json['imageUrl']?.toString();
     if (rawUrl != null && rawUrl.startsWith('http://')) {
       rawUrl = rawUrl.replaceFirst('http://', 'https://');
     }
+    rawUrl ??= parsedId == null
+        ? null
+        : 'https://exercisedb.p.rapidapi.com/image?exerciseId=$parsedId&resolution=180';
     return ExerciseModel(
-      id: int.tryParse(json['id'].toString()),
+      id: parsedId,
       userId: json['userId'] is int ? json['userId'] as int : null,
       name: json['name']?.toString() ?? '',
       bodyPart: json['bodyPart']?.toString() ?? '',
-      targetMuscle: json['target']?.toString() ?? json['targetMuscle']?.toString() ?? '',
+      targetMuscle:
+          json['target']?.toString() ?? json['targetMuscle']?.toString() ?? '',
       equipment: json['equipment']?.toString() ?? '',
       imageUrl: rawUrl,
       imagePath: json['imagePath']?.toString(),

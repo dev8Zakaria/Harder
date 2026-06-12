@@ -21,11 +21,6 @@ class BodyWeightModel {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'userId': userId,
-      'date': date,
-      'weight': weight,
-    };
+    return {'id': id, 'userId': userId, 'date': date, 'weight': weight};
   }
 }

@@ -14,135 +14,137 @@ class LandingScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image with Fallback
           Positioned.fill(
             child: Image.asset(
               'assets/landing.png',
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
-                // Fallback to a solid premium dark gradient if image fails or format is unsupported
                 return Container(
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Color(0xFF192126),
-                        Color(0xFF384046),
-                      ],
+                      colors: [Color(0xFF192126), Color(0xFF384046)],
                     ),
                   ),
                 );
               },
             ),
           ),
-          // Dark Gradient Overlay for text contrast
           Positioned.fill(
-            child: Container(
+            child: DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    const Color(0xFF192126).withOpacity(0.3),
-                    const Color(0xFF192126).withOpacity(0.75),
-                    const Color(0xFF192126),
+                    Colors.black.withOpacity(0.08),
+                    Colors.black.withOpacity(0.22),
+                    const Color(0xFF101719).withOpacity(0.92),
                   ],
-                  stops: const [0.0, 0.5, 1.0],
+                  stops: const [0.0, 0.52, 1.0],
                 ),
               ),
             ),
           ),
-          // Content
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 30),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Spacer(),
-                  
-                  // App Logo / Icon
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.15),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.bolt,
-                      color: AppColors.primary,
-                      size: 48,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // App Title
+                  const Spacer(flex: 5),
                   const Text(
                     'HARDER',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 56,
+                      fontSize: 52,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 2.0,
+                      letterSpacing: 1.5,
                     ),
                   ),
-                  
-                  // Accent Line
-                  Container(
-                    height: 4,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Description
+                  const SizedBox(height: 10),
                   const Text(
-                    'Dépassez vos limites, suivez vos entraînements, contrôlez votre poids et maîtrisez vos calories.',
+                    'Planifie. Soulève. Progresse.',
                     style: TextStyle(
-                      color: Color(0xFF8B8F92),
+                      color: Color(0xFFE5ECE4),
                       fontSize: 18,
-                      height: 1.5,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Ton carnet de musculation, poids et calories dans une seule app.',
+                    style: TextStyle(
+                      color: Color(0xFFB7C0BA),
+                      fontSize: 14,
+                      height: 1.45,
+                    ),
+                  ),
+                  const SizedBox(height: 18),
+                  const Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _LandingChip(
+                        icon: Icons.fitness_center,
+                        label: 'Workouts',
+                      ),
+                      _LandingChip(
+                        icon: Icons.trending_up,
+                        label: 'Progression',
+                      ),
+                      _LandingChip(
+                        icon: Icons.local_fire_department,
+                        label: 'Calories',
+                      ),
+                    ],
+                  ),
                   const Spacer(flex: 2),
-                  
-                  // Commencer Button
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: 60,
                     child: ElevatedButton(
                       onPressed: () {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => LoginScreen(authController: authController),
+                            builder: (_) =>
+                                LoginScreen(authController: authController),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: const Color(0xFF192126),
+                        elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(18),
                         ),
                       ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
+                          const SizedBox(width: 34),
+                          const Text(
                             'Commencer',
                             style: TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
-                          SizedBox(width: 8),
-                          Icon(Icons.arrow_forward_rounded),
+                          Container(
+                            width: 34,
+                            height: 34,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF192126).withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.arrow_forward_rounded,
+                              size: 20,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -150,6 +152,40 @@ class LandingScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LandingChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+
+  const _LandingChip({required this.icon, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.28),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withOpacity(0.12)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: AppColors.primary, size: 15),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ],
