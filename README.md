@@ -168,6 +168,11 @@ screenshots/
   search.png
   personalized_exercice.png
   in_workout.png
+  calorie_intake.png
+  force_progression.png
+  login.png
+  signup1.png
+  signup2.png
   profil.png
 ```
 
@@ -183,9 +188,13 @@ screenshots/
 | --- | --- | --- |
 | ![Recherche](screenshots/search.png) | ![Exercice personnalise](screenshots/personalized_exercice.png) | ![Seance](screenshots/in_workout.png) |
 
-| Profil |
-| --- |
-| ![Profil](screenshots/profil.png) |
+| Calories | Progression force | Profil |
+| --- | --- | --- |
+| ![Calories](screenshots/calorie_intake.png) | ![Progression force](screenshots/force_progression.png) | ![Profil](screenshots/profil.png) |
+
+| Connexion | Inscription 1 | Inscription 2 |
+| --- | --- | --- |
+| ![Connexion](screenshots/login.png) | ![Inscription 1](screenshots/signup1.png) | ![Inscription 2](screenshots/signup2.png) |
 
 ## Installation
 
